@@ -1,4 +1,4 @@
-name: Pipeline FCG USERS API
+name: Pipeline FCG ORDERS API
 
 on:
   push:
@@ -18,8 +18,8 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t arthur1702/fcgusers:latest .
-          docker push arthur1702/fcgusers:latest
+          docker build -t arthur1702/fcgorders:latest .
+          docker push arthur1702/fcgorders:latest
 
       - name: Set up kubectl
         uses: azure/k8s-set-context@v1

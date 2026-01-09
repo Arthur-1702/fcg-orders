@@ -7,7 +7,7 @@ WORKDIR /app
 COPY . .
 
 # Restaura pacotes NuGet
-RUN dotnet restore fcg-users.sln
+RUN dotnet restore fcg-orders.sln
 
 # Compila e publica em um único comando
 RUN dotnet publish API/API.csproj -c Release -o /app/publish \

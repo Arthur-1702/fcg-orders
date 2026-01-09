@@ -16,3 +16,6 @@ data:
 
   # ServiceBus Configuration (non-sensitive)
   ServiceBus__NotificationQueueName: "notifications-queue"
+
+  # Application Settings
+  GamesAPI__BaseUrl: "http://fcggames-service:80"

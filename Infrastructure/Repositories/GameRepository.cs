@@ -29,9 +29,8 @@ namespace Infrastructure.Repositories
                         IServiceScopeFactory scopeFactory)
         {
             _httpClient = httpClient;
-            _endpoint = configuration["GamesAPI:EndPoint"];
+            _endpoint = configuration["GameAPI"]; //_endpoint = configuration["GamesAPI:EndPoint"];
             _subscriptionKey = configuration["GamesAPI:OcpApimSubscriptionKey"];
-            _authorizationToken = configuration["GamesAPI:Authorization"];
             _loggerService = loggerService;
             _httpContext = httpContextAccessor;
             _scopeFactory = scopeFactory;
@@ -39,9 +38,20 @@ namespace Infrastructure.Repositories
 
         public Game GetGameById(int id)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"{_endpoint}/{id}");
+            // Recupera o token do contexto atual
+            var token = _httpContext.HttpContext?
+                .Request.Headers["Authorization"].ToString()
+                .Replace("Bearer ", "");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{_endpoint}/Games/{id}");
             request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _authorizationToken);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = _httpClient.Send(request);
 

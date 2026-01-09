@@ -24,15 +24,15 @@ namespace Application.Services
         private readonly IHttpContextAccessor _httpContext;
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly IServiceBusPublisher _serviceBusPublisher;
-        private readonly IQueueService _queueService; 
+        //private readonly IQueueService _queueService; 
         public OrderService(
                 IOrderRepository orderRepository,
                 ILoggerService loggerService,
                 IGameService gameService,
                 IHttpContextAccessor httpContext,
                 IServiceScopeFactory scopeFactory,
-                IServiceBusPublisher serviceBusPublisher,
-                IQueueService queueService
+                IServiceBusPublisher serviceBusPublisher
+                //IQueueService queueService
                 )         
         {
             _orderRepository = orderRepository
@@ -42,7 +42,7 @@ namespace Application.Services
             _httpContext = httpContext;
             _scopeFactory = scopeFactory;
             _serviceBusPublisher = serviceBusPublisher;
-            _queueService = queueService;
+            //_queueService = queueService;
         }
 
         public async Task<IEnumerable<OrderResponse>> GetAllOrdersAsync()
@@ -71,7 +71,7 @@ namespace Application.Services
             return orderFound.ToResponse();
         }
 
-        public OrderResponse AddOrder(AddOrderRequest order)
+        public async Task<OrderResponse> AddOrder(AddOrderRequest order)
         {
             //getting user orders
             var userOrders = _orderRepository.GetAllOrders().Where(o => o.UserId.Equals(order.UserId, StringComparison.OrdinalIgnoreCase));
@@ -96,18 +96,19 @@ namespace Application.Services
             
             var orderAdded = _orderRepository.AddOrder(orderEntity);
 
-            _serviceBusPublisher.PublishMessageAsync(
-                topicName: "payments",
+            await _serviceBusPublisher.PublishMessageAsync(
+                topicName: "notifications-queue",
                 message: new
                 {
-                    OrderId = orderAdded.OrderId,
-                    TotalPrice = orderAdded.TotalPrice,
-                    CreatedAt = orderAdded.CreatedAt,
-                    PaymentMethod = orderAdded.PaymentMethod
+                    NotificationId = Guid.NewGuid().ToString(),
+                    UserId = orderAdded.UserId,
+                    Title = "Pedido Confirmado",
+                    Body = $"O pedido #{orderAdded.OrderId} foi confirmado. Total: R$ {orderAdded.TotalPrice:F2}. Pagamento por: {orderAdded.PaymentMethod}",
+                    CreatedAt = DateTime.UtcNow
                 });
-
-            _queueService.PublishOrderAsync(orderAdded.OrderId);
-            _queueService.PublishNotificationAsync(orderAdded.OrderId);
+                
+            // _queueService.PublishOrderAsync(orderAdded.OrderId);
+            // _queueService.PublishNotificationAsync(orderAdded.OrderId);
 
             return orderAdded.ToResponse();
         }

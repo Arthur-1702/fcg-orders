@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Prometheus;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -133,7 +134,7 @@ builder.Services.AddScoped<IGameService, GameService>();
 
 //infra services
 builder.Services.AddScoped<ILoggerService, LoggerService>();
-builder.Services.AddSingleton<IQueueService, QueueService>();
+//builder.Services.AddSingleton<IQueueService, QueueService>();
 builder.Services.AddSingleton<IServiceBusPublisher, ServiceBusPublisher>();
 
 //repositories
@@ -200,6 +201,10 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+// Configura Monitoramento com Prometheus
+app.UseRouting();
+app.UseHttpMetrics(); // Coleta métricas HTTP automaticamente
+app.MapMetrics(); // Expõe endpoint /metrics
 
 // Middleware que valida autentica��o JWT em cada requisi��o
 app.UseAuthentication();

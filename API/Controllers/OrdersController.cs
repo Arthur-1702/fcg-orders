@@ -57,9 +57,9 @@ namespace API.Controllers
         [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
-        public IActionResult Add([FromBody] AddOrderRequest orderRequest)
+        public async Task<IActionResult> Add([FromBody] AddOrderRequest orderRequest)
         {
-            var createdOrder = _orderService.AddOrder(orderRequest);
+            var createdOrder = await _orderService.AddOrder(orderRequest);
             return CreatedAtAction(nameof(GetById), new { id = createdOrder.OrderId }, createdOrder);
         }
         #endregion

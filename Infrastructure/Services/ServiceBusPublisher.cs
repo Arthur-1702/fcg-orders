@@ -10,7 +10,7 @@ namespace Infrastructure.Services
 
         public ServiceBusPublisher(IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("FCGServiceBusConnection");
+            var connectionString = configuration["ServiceBus"];
             _serviceBusClient = new ServiceBusClient(connectionString);
         }
 

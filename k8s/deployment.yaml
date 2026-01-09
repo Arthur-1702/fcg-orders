@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fcgorders
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fcgorders
+  template:
+    metadata:
+      labels:
+        app: fcgorders
+    spec:
+      containers:
+        - name: fcgorders
+          image: arthur1702/fcgorders:latest
+          env:
+            - name: TZ
+              value: "America/Sao_Paulo"
+          ports:
+            - containerPort: 80

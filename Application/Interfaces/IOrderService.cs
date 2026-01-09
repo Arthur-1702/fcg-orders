@@ -6,7 +6,7 @@ namespace Application.Interfaces
     {
         Task<IEnumerable<OrderResponse>> GetAllOrdersAsync();
         OrderResponse GetOrderById(int id);
-        OrderResponse AddOrder(AddOrderRequest game);
+        Task<OrderResponse> AddOrder(AddOrderRequest game);
         OrderResponse UpdateOrder(UpdateOrderRequest game);
         bool DeleteOrder(int id);
     }
